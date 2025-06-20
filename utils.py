@@ -1,35 +1,18 @@
 from movie import Movie
 from cinema import Cinema
 
-def	print_seat(i, j, seat):
-	if seat:
-		if (i >= 9 and j < 9):
-			print(f"\033[32m| {i + 1}-{j + 1}|\033[0m", end="  ")
-		elif i >= 9 and j >= 9:
-			print(f"\033[32m| {i + 1}-{j + 1}|\033[0m", end="  ")
-		else:
-			print(f"\033[32m| {i + 1}-{j + 1} |\033[0m", end="  ")
-	else:
-		if (i >= 9 or j >= 9):
-			print(f"\033[31m| {i + 1}-{j + 1}|\033[0m", end="  ")
-		elif i >= 9 and j >= 9:
-			print(f"\033[31m| {i + 1}-{j + 1}|\033[0m", end="  ")
-		else:
-			print(f"\033[31m| {i + 1}-{j + 1} |\033[0m", end="  ")
-
-
 def	add_movie(args):
 	cinema :Cinema = args.data
 
 	mov = cinema.find_movie(args.title)
 
-	if not movie:
+	if not mov:
 		movie = Movie(args.title, args.genre, int(args.duration), int(args.age_r))
 		cinema.add_movie(movie)
-		print("Movie added successfully")
+		print("\033[32mMovie added successfully\033[0m")
 		return
 	else:
-		print("Movie already exists")
+		print("\033[31mMovie already exists\033[0m")
 
 def	list_movies(args):
 	cinema :Cinema = args.data
@@ -59,7 +42,10 @@ def	add_booking(args):
 			if id != False:
 				print("\033[32m Seat booked successfully! \n\033[0m")
 				print(f"Save your booking_id for further actions.\n\033[35mBooking id: {id}\033[0m")
-			return
+				return
+			if id == False:
+				print("\033[31m The seat is booked already please choose another one. \n\033[0m")
+				return
 	print(f"\033[31m Sorry but there is no showtime for {args.title} at {args.time} \n\033[0m")
 
 def cancel_booking(args):

@@ -43,7 +43,6 @@ def	init_parser(cinema: Cinema) -> None:
 	p.add_argument("--booking-id", required=True, help="Booking id")
 	p.set_defaults(func=cancel_booking, data=cinema)
 
-	parser.add_argument("-h", "--help", action="help")
 	return parser
 
 

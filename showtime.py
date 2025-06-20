@@ -1,10 +1,23 @@
 # Class Show Time
 
 import datetime
-
 from movie import Movie
-from utils import print_seat
 
+def	print_seat(i, j, seat):
+	if seat:
+		if (i >= 9 and j < 9):
+			print(f"\033[32m| {i + 1}-{j + 1}|\033[0m", end="  ")
+		elif i >= 9 and j >= 9:
+			print(f"\033[32m| {i + 1}-{j + 1}|\033[0m", end="  ")
+		else:
+			print(f"\033[32m| {i + 1}-{j + 1} |\033[0m", end="  ")
+	else:
+		if (i >= 9 or j >= 9):
+			print(f"\033[31m| {i + 1}-{j + 1}|\033[0m", end="  ")
+		elif i >= 9 and j >= 9:
+			print(f"\033[31m| {i + 1}-{j + 1}|\033[0m", end="  ")
+		else:
+			print(f"\033[31m| {i + 1}-{j + 1} |\033[0m", end="  ")
 class	ShowTime:
 
 	def	__init__(self, movie: Movie, time: str, row_count:int = 10) -> None:
@@ -36,7 +49,7 @@ class	ShowTime:
 
 		if self.seats[row - 1][col - 1] == 1:
 			self.seats[row - 1][col - 1] = 0
-			booking_id = seat + " " + datetime.datetime.now().date()
+			booking_id = seat + " " + datetime.datetime.now().date().__str__()
 			self.booked[booking_id] = seat
 			return booking_id
 		return False
@@ -46,7 +59,7 @@ class	ShowTime:
 		seat = splited[0].split("-")
 		row = int(seat[0])
 		col = int(seat[1])
-		if self.booked.pop(booking_id):
+		if self.booked.pop(booking_id, None):
 			self.seats[row - 1][col - 1] = 1
 			return True
 		return False
