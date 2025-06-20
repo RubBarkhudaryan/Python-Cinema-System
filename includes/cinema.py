@@ -1,7 +1,7 @@
 # Class Cinema
 
-from movie import Movie
-from showtime import ShowTime
+from .movie import Movie
+from .showtime import ShowTime
 
 class	Cinema:
 
@@ -12,35 +12,34 @@ class	Cinema:
 	def	add_movie(self, movie: Movie) -> bool:
 		for mov in self.movies:
 			if mov == movie:
-				return (False)
-		
+				return False
+
 		self.movies.append(movie)
-		return (True)
+		return True
 
 	def	add_showtime(self, movie: Movie, time: str) -> bool:
 
 		for show in self.showtimes:
 			if show.time == time:
-				return (False)
+				return False
 
-		show = ShowTime(movie, time, 10)
+		show = ShowTime(movie, time)
 		self.showtimes.append(show)
-		return (True)
+		return True
 	
 	def	list_movies(self) -> None:
 
-		print("All the movies that are available in our cinema are listed below.\n")
+		print("\033[33m All the movies that are available in our cinema are listed below.\n \033[0m")
 		for mov in self.movies:
 			print(mov.get_info())
 			print()
 
 	def	list_showtimes(self, movie_title: str) -> None:
 
-		print(f"Available showtimes for the movie: {movie_title}\n")
+		print(f"\033[33m Available showtimes for the movie: {movie_title}\n \033[0m")
 		for show in self.showtimes:
 			if show.movie.title == movie_title:
-				print(show.movie.title)
-				print(show.time)
+				print("Title: ", show.movie.title, " Time: ", show.time)
 
 	def	find_showtime(self, movie_title, time) -> ShowTime | bool:
 		for show in self.showtimes:
