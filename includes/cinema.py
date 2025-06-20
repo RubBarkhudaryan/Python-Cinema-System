@@ -41,8 +41,14 @@ class	Cinema:
 			if show.movie.title == movie_title:
 				print("Title: ", show.movie.title, " Time: ", show.time)
 
-	def	find_showtime(self, movie_title, time) -> ShowTime | bool:
+	def	find_showtime(self, movie_title: str, time: str) -> ShowTime | bool:
 		for show in self.showtimes:
 			if show.movie.title == movie_title and show.time == time:
 				return show
+		return False
+	
+	def	find_movie(self, movie_title: str) -> Movie | bool:
+		for movie in self.movies:
+			if movie.title == movie_title:
+				return movie
 		return False

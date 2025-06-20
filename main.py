@@ -19,31 +19,35 @@ def	list_showtimes(args):
 
 def	add_showtime(args):
 	cinema :Cinema = args.data
-	movie = Movie(args.title, args.genre, int(args.duration), int(args.age_r))
+
+	movie = cinema.find_movie(args.title)
+	if not movie:
+		print(f"\033[31m No movie called {args.title} — add it first please. \033[0m")
+		return
 	cinema.add_showtime(movie, args.time)
+	print("\033[32m Showtime added successfully. \033[0m")
 
 def	add_booking(args):
 
 	cinema :Cinema = args.data
 
 	for sh in cinema.showtimes:
-		if sh.movie.title == sh.title and sh.time == sh.time:
-			break
-	id = sh.book_seat(args.seat_pos)
-	if id != False:
-		print("\033[32m Seat booked successfully! \n\033[0m")
-		print(f"Save your booking_id for further actions.\n\033[35mBooking id: {id}\033[0m")
+		if sh.movie.title == args.title and sh.time == args.time:
+			id = sh.book_seat(args.seat_pos)
+			if id != False:
+				print("\033[32m Seat booked successfully! \n\033[0m")
+				print(f"Save your booking_id for further actions.\n\033[35mBooking id: {id}\033[0m")
+			return
+	print(f"\033[31m Sorry but there is no showtime for {args.title} at {args.time} \n\033[0m")
 
-def	cancel_booking(args):
-
-	cinema :Cinema = args.data
-
-	for show in cinema.showtimes:
-		if show.title == args.title and show.time == args.time:
-			break
-	if show.cancel_booking(args.booking_id):
-		print("\033[32m Booking canceled successfully! See you next time! \n\033[0m")
-
+def cancel_booking(args):
+	cinema: Cinema = args.data
+	for sh in cinema.showtimes:
+		if sh.movie.title == args.title and sh.time == args.time:
+			ok = sh.cancel_booking(args.booking_id)
+			print("\033[32m Canceled \n\033[0m" if ok else "\033[31m Booking not found.\n \033[0m")
+			return
+	print("\033[31mShowtime not found.\n\033[0m")
 
 def	main():
 
@@ -58,15 +62,12 @@ def	main():
 	p = subs.add_parser("add-movie", help="Add a movie to a list")
 	p.add_argument("--title", required=True, help="Movie title")
 	p.add_argument("--genre", required=True, help="Movie genre")
-	p.add_argument("--duration", required=True, help="Movie duration in minutes")
-	p.add_argument("--age-r", required=True, help="Movie age retsriction")
+	p.add_argument("--duration", required=True, type=int help="Movie duration in minutes")
+	p.add_argument("--age-r", required=True, type=int help="Movie age retsriction")
 	p.set_defaults(func=add_movie, data=cinema)
 
 	p = subs.add_parser("add-showtime", help="Add a showtime to list")
 	p.add_argument("--title", required=True, help="Movie title")
-	p.add_argument("--genre", required=True, help="Movie genre")
-	p.add_argument("--duration", required=True, help="Movie duration in minutes")
-	p.add_argument("--age-r", required=True, help="Movie age retsriction")
 	p.add_argument("--time", required=True, help="Showtime time")
 	p.set_defaults(func=add_showtime, data=cinema)
 
@@ -91,8 +92,6 @@ def	main():
 
 	args = parser.parse_args()
 	args.func(args)
-
-	cinema.list_showtimes("hello")
 
 	# while True:
 	# 	True
