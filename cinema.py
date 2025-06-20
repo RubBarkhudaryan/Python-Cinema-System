@@ -1,7 +1,7 @@
 # Class Cinema
 
-from .movie import Movie
-from .showtime import ShowTime
+from movie import Movie
+from showtime import ShowTime
 
 class	Cinema:
 

@@ -2,8 +2,8 @@
 
 import datetime
 
-from .movie import Movie
-from utils.utils import print_seat
+from movie import Movie
+from utils import print_seat
 
 class	ShowTime:
 

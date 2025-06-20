@@ -1,58 +1,11 @@
-from includes.movie import Movie
-from includes.showtime import ShowTime
-from includes.cinema import Cinema
-
 import argparse
+import shlex
+import sys
 
-def	add_movie(args):
-	cinema :Cinema = args.data
-	movie = Movie(args.title, args.genre, int(args.duration), int(args.age_r))
-	cinema.add_movie(movie)
+from cinema import Cinema
+from utils import add_booking, add_showtime, add_movie, cancel_booking, list_movies, list_showtimes
 
-def	list_movies(args):
-	cinema :Cinema = args.data
-	cinema.list_movies()
-
-def	list_showtimes(args):
-	cinema :Cinema = args.data
-	cinema.list_showtimes(args.title)
-
-def	add_showtime(args):
-	cinema :Cinema = args.data
-
-	movie = cinema.find_movie(args.title)
-	if not movie:
-		print(f"\033[31m No movie called {args.title} — add it first please. \033[0m")
-		return
-	cinema.add_showtime(movie, args.time)
-	print("\033[32m Showtime added successfully. \033[0m")
-
-def	add_booking(args):
-
-	cinema :Cinema = args.data
-
-	for sh in cinema.showtimes:
-		if sh.movie.title == args.title and sh.time == args.time:
-			id = sh.book_seat(args.seat_pos)
-			if id != False:
-				print("\033[32m Seat booked successfully! \n\033[0m")
-				print(f"Save your booking_id for further actions.\n\033[35mBooking id: {id}\033[0m")
-			return
-	print(f"\033[31m Sorry but there is no showtime for {args.title} at {args.time} \n\033[0m")
-
-def cancel_booking(args):
-	cinema: Cinema = args.data
-	for sh in cinema.showtimes:
-		if sh.movie.title == args.title and sh.time == args.time:
-			ok = sh.cancel_booking(args.booking_id)
-			print("\033[32m Canceled \n\033[0m" if ok else "\033[31m Booking not found.\n \033[0m")
-			return
-	print("\033[31mShowtime not found.\n\033[0m")
-
-def	main():
-
-	cinema = Cinema([], [])
-
+def	init_parser(cinema: Cinema) -> None:
 	parser = argparse.ArgumentParser(
 		prog="python3 main.py",
 		description="Cinema management simple system CLI"
@@ -62,8 +15,8 @@ def	main():
 	p = subs.add_parser("add-movie", help="Add a movie to a list")
 	p.add_argument("--title", required=True, help="Movie title")
 	p.add_argument("--genre", required=True, help="Movie genre")
-	p.add_argument("--duration", required=True, type=int help="Movie duration in minutes")
-	p.add_argument("--age-r", required=True, type=int help="Movie age retsriction")
+	p.add_argument("--duration", required=True, type=int, help="Movie duration in minutes")
+	p.add_argument("--age-r", required=True, type=int, help="Movie age retsriction")
 	p.set_defaults(func=add_movie, data=cinema)
 
 	p = subs.add_parser("add-showtime", help="Add a showtime to list")
@@ -90,11 +43,52 @@ def	main():
 	p.add_argument("--booking-id", required=True, help="Booking id")
 	p.set_defaults(func=cancel_booking, data=cinema)
 
-	args = parser.parse_args()
-	args.func(args)
+	parser.add_argument("-h", "--help", action="help")
+	return parser
 
-	# while True:
-	# 	True
+
+def	main():
+
+	cinema = Cinema([],[])
+
+	parser = init_parser(cinema)
+
+	# if invoked with arguments, just run once
+	if len(sys.argv) > 1:
+		args = parser.parse_args()
+		args.func(args)
+		return
+
+	# otherwise enter REPL
+	print("Enter commands (type 'exit' or 'quit' to leave).")
+	while True:
+		try:
+			line = input("cinema> ").strip()
+		except EOFError:
+			break
+		if not line or line in ("exit", "quit"):
+			break
+
+		# split into argv list, respecting quotes
+		try:
+			argv = shlex.split(line)
+		except ValueError as e:
+			print("Parse error:", e)
+			continue
+
+		# inject the sub‑parser name if missing?
+		# (only necessary if you want to allow bare flags)
+		try:
+			args = parser.parse_args(argv)
+			if not hasattr(args, "func"):
+				print("Unknown command. Try 'view-movies', 'add-movie', etc.")
+				continue
+			args.func(args)
+		except SystemExit:
+			# argparse throws this on parse errors or `--help`
+			continue
+
+	print("Goodbye. 👋")
 
 if __name__ == "__main__":
 	main()
